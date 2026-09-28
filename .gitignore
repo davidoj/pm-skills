@@ -1,0 +1,6 @@
+data/
+backends/ACTIVE.local.md
+__pycache__/
+*.pyc
+.DS_Store
+.env
