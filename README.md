@@ -21,6 +21,7 @@ PRINCIPLES.md          The why: desiderata, design principles, operations vocabu
 STYLE.md               How tracker text reads: summary first, appendix after, plain sentences
 skills/
   pm-orient/           Situational awareness + attention routing (the check-in)
+  pm-digest/           Morning digest: pm-orient's sort of your issues, email, a focus checklist
   pm-pickup/           Start work on a task without going in blind
   pm-log/              Progress logging that makes work resumable
   pm-capture/          New tasks & spin-offs that actually resurface
