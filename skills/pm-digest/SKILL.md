@@ -1,11 +1,13 @@
 ---
 name: pm-digest
-description: Personal morning digest, a variant of the team daily-digest skill that sorts Linear work the way pm-orient does. Syncs yesterday's checked-off daily-note todos back to Linear, then sorts the user's Linear work into due soon, needs you, going stale, moving and ready, and shows new inbox email and Discord DM notifications. Asks which todos to focus on and writes them as a checklist into today's daily note. Use when the user runs /pm-digest or asks for the pm digest.
+description: Personal variant of the team daily-digest skill. It uses pm-orient's needs-you, going-stale and moving sections, and adds due soon and ready. Syncs yesterday's checked-off daily-note todos back to Linear, then sorts the user's Linear work into due soon, needs you, going stale, moving and ready, and shows new inbox email and Discord DM notifications. Asks which todos to focus on and writes them as a checklist into today's daily note. Use when the user runs /pm-digest or asks for the pm digest.
 ---
 
 # pm-digest
 
-This is a personal copy of the `daily-digest` skill from `~/agent-setup`. Step 2 is different: it sorts the user's own Linear issues by what they need, with the sections and freshness limits of `pm-orient`. The other steps match `daily-digest`, and they use the same settings and state file.
+**Serves:** Attention Routing, Truthful State, Forward Momentum (`PRINCIPLES.md`).
+
+This is a personal copy of the `daily-digest` skill from `~/agent-setup`. It needs `~/agent-setup` and its settings, so it is not part of the portable pm-skills set. Step 2 is different: it lists only the user's own Linear issues. It uses pm-orient's needs-you, going-stale and moving sections and freshness limits, and adds due soon and ready. The other steps match `daily-digest`, and they use the same settings and state file.
 
 Run the steps in order. Keep the output short and easy to scan, because the user reads it first thing in the morning. **Only make the changes listed in steps 1, 6 and 7, and the session rename in Setup.** Don't mark emails as read, reply to anything, or change Linear in any other way.
 
@@ -14,7 +16,7 @@ Run the steps in order. Keep the output short and easy to scan, because the user
 - **Settings:** read the `## Daily digest settings` section of `~/.agents/personal.md`. If the section or a setting is missing, stop. Name the missing setting and point the user to `~/agent-setup/personal.md.example`.
 - **Tools:** this skill needs the Linear MCP server (`~/agent-setup/docs/linear.md`), the Gmail connector (`~/agent-setup/docs/google.md`) and a folder of daily notes (`~/agent-setup/docs/obsidian.md`). If one is missing, say which, skip the steps that need it, and continue.
 - **Today's date:** run `TZ=<time zone> date +%F`, with the time zone from the settings. The machine may run on UTC.
-- **Session name:** rename this Claude Code session to `Daily digest YYYY-MM-DD` (today's date), so you can tell the sessions apart. Call `get_session` from the `claude-code-remote` MCP server with no arguments to get the session ID, then call `set_session_title`. If those tools are not available, skip this step and say so in one line.
+- **Session name:** rename this Claude Code session to `PM digest YYYY-MM-DD` (today's date), so you can tell the sessions apart. Use the session-management tools: call `get_session` with no arguments to get the session ID, then call `set_session_title`. If those tools are not available, skip this step and say so in one line.
 - **Daily notes:** `<daily notes folder>/YYYY-MM-DD.md`. Edit the files directly.
 - **Linear:** the team and projects from the settings. Done status: `Done`.
 - **State file:** `~/.local/state/daily-digest/last-run` holds the date of the previous digest (`YYYY-MM-DD`). It may not exist yet.
@@ -40,7 +42,7 @@ Sort the user's Linear work by what it needs from them, not by project. Only sho
 
 To get the latest comment on an issue in Needs you or Going stale, call `list_comments` with `orderBy: "createdAt"`. Show the comment with the latest `createdAt`, and skip inline comments on the description (`quotedText` is set).
 
-**Sections.** Put each open issue in the first section that it fits, so it appears only once:
+**Sections.** Put each open issue in the first section that it fits, so it appears only once. If an issue in Due soon also belongs in Needs you, show its ask and latest comment too.
 
 1. **⏰ Due soon:** overdue or due in the next 7 days, from any project, sorted by due date. Give the days left in words ("**OVERDUE by 2 days**", "**due TODAY**", "due tomorrow", "due Thu 12 Nov, 3 days"). Mark anything overdue or due within 2 days in bold. If the description has a checklist, show how many items are left ("2 of 4 steps left").
 2. **🙋 Needs you:** from any project. Issues with the `needs-you` label, and colleague asks. A colleague ask is an `unstarted` issue that someone else created in the last 14 days. That is, `createdById` is set and is not `assigneeId`. A `backlog` issue is not a colleague ask, because the user has put it aside. Name the person who created it (`createdBy`). Show each one in full: what it asks, and the latest comment if it has one. Never shorten this section.
